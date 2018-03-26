@@ -85,7 +85,7 @@ class MassFlash:
 
     def showStatus(self):
         indexes_to_remove = []
-        for index,flashing_operation in self.flashing_operations:
+        for index, flashing_operation in enumerate(self.flashing_operations):
             if flashing_operation.status() == False:
                 indexes_to_remove.append(index)
 
