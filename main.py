@@ -84,8 +84,13 @@ class MassFlash:
             return self.askStartFlashing
 
     def showStatus(self):
-        for flashing_operation in self.flashing_operations:
-            flashing_operation.status()
+        indexes_to_remove = array()
+        for index,flashing_operation in self.flashing_operations:
+            if flashing_operation.status() == False:
+                indexes_to_remove.append(index)
+
+        for index_to_remove in indexes_to_remove:
+            del self.flashing_operations[index_to_remove]
 
     def run(self):
         while True:  # {
