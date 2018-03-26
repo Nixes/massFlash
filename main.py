@@ -100,7 +100,7 @@ class MassFlash:
                 # self.startFlash()
             # get all flashing progress
             self.showStatus()
-            time.sleep(0.5)
+            time.sleep(0.05)
         # }
 
 # checks if currently logged in user is an admin
