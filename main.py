@@ -125,5 +125,8 @@ def checkAdmin():
         exit()
 # checkAdmin()
 
-massFlash = MassFlash('/Users/kepler/Desktop/programtemplate/kepler4GBsd2017.img')
+image_path = sys.argv[1]
+print("Starting mass flash using image: "+image_path)
+
+massFlash = MassFlash(image_path)
 massFlash.run()
