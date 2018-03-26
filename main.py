@@ -90,7 +90,8 @@ class MassFlash:
                 indexes_to_remove.append(index)
 
         print('\n')
-
+        # sort index by index largest to smallest to allow all to be removed
+        indexes_to_remove = sorted(indexes_to_remove, reverse=True)
         for index_to_remove in indexes_to_remove:
             del self.flashing_operations[index_to_remove]
 
