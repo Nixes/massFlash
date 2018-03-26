@@ -23,7 +23,7 @@ class MassFlash:
         elif device_name.startswith("/dev/disk"):
             # rdisk works better on osx so we'll use that one
             device_name = device_name.replace("/dev/disk", "/dev/rdisk")
-            # split remove partition descripter
+            # split remove partition descripter so we get the raw device
             device_name = re.sub('([s][0-9])','',device_name)
             return device_name
         else:
@@ -36,7 +36,6 @@ class MassFlash:
             if disk.device.find('/dev/sda') != -1:
                 continue
 
-            # if disk.fstype == 'vfat' and disk.device.find('/dev/sdb') >= 0:
             filtered_drives.append(disk)
 
         return filtered_drives
