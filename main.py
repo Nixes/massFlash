@@ -120,5 +120,5 @@ def checkAdmin():
         exit()
 # checkAdmin()
 
-massFlash = MassFlash('E:/backups/win7_install_backup.img')
+massFlash = MassFlash('/Users/kepler/Desktop/programtemplate/kepler4GBsd2017.img')
 massFlash.run()
