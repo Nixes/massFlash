@@ -89,6 +89,8 @@ class MassFlash:
             if flashing_operation.status() == False:
                 indexes_to_remove.append(index)
 
+        print('\n')
+
         for index_to_remove in indexes_to_remove:
             del self.flashing_operations[index_to_remove]
 
