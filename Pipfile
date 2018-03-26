@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 psutil = "*"
 tqdm = "*"
+wmi = "*"
+"pywin32" = "*"
 
 [dev-packages]
 
