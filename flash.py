@@ -5,8 +5,8 @@ from subprocess import call
 from tqdm import tqdm
 
 class Flash:
+    drive = None
     disk_path = ""
-    partition_path = ""
     image_path = ""
     thread_handle = None
     bytes_to_write = 0
@@ -23,13 +23,13 @@ class Flash:
         return filesize
 
 
-    def __init__(self, disk, image, partition_path):  # {
-        self.disk_path = disk
-        self.image_path = image
-        self.partition_path = partition_path
+    def __init__(self, drive, image_path):  # {
+        self.drive = drive
+        self.disk_path = drive.physical_disk
+
+        self.image_path = image_path
         # get the size of the image to write for percentage calculations
-        # self.bytes_to_write = os.path.getsize(image)
-        self.bytes_to_write = self.getFileSize(image)
+        self.bytes_to_write = self.getFileSize(image_path)
         self.progress_bar = tqdm(total=self.bytes_to_write, desc="Disk: "+self.disk_path)
     # }
 
@@ -37,7 +37,7 @@ class Flash:
     # wrapper around dd command, until I can figure out why a bit for bit copy is not sufficient
     def _ddWriteFileToDisk(self, sourceimage_path,  destdisk_path):  # {
         # unmount disks
-        call(["sudo", "umount", "-f", self.partition_path])
+        self.drive.unmount()
 
         self.bytes_written = self.bytes_to_write/2
         # run dd
@@ -68,14 +68,10 @@ class Flash:
             time.sleep(0.0000001)
     # }
 
-    def unmountDrive(self,destdisk_path):
-        if sys.platform == 'osx':
-            call(["sudo", "umount", "-f", destdisk_path])
-
     # may need rb+ for disk (+ does update mode), there are some indications that block devices can only be written to in this mode (especially in windows)
     def _writeFileToDisk(self, sourceimage_path,  destdisk_path):  # {
         # unmount drive
-        call(["sudo", "umount", "-f", destdisk_path])
+        self.drive.unmount()
 
         with open(sourceimage_path, 'rb') as image:
             with open(destdisk_path, 'rb+') as disk:  # was wb
@@ -98,7 +94,7 @@ class Flash:
 
     # simple wrapper that starts image flash in a thread
     def writeFileToDisk(self,sourceimage_path,  destdisk_path):
-        thread_handle = threading.Thread(target=self._ddWriteFileToDisk, args=[sourceimage_path, destdisk_path])
+        thread_handle = threading.Thread(target=self._writeFileToDisk, args=[sourceimage_path, destdisk_path])
         thread_handle.start()
         self.thread_handle = thread_handle
 
