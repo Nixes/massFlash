@@ -108,9 +108,14 @@ class Flash:
     def calculatePercentage(self):
         return (self.bytes_written/self.bytes_to_write)*100
 
-    # prints a string showing current status of this flashing operation
+    # prints a string showing current status of this flashing operation, returns false if execution finished
     def status(self):  # {
         # self.progress_bar.update(self.bytes_written)
         percentage_string = str(self.calculatePercentage())
         print('Drive: '+self.disk_path+' Percentage: '+percentage_string+"\n")
+
+        if self.bytes_written == self.bytes_to_write:
+            return False
+        else:
+            return True
     # }
