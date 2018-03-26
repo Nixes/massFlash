@@ -2,6 +2,7 @@ from psutil import disk_partitions
 from threading import Thread
 import ctypes, sys
 import time
+import re
 from flash import Flash
 
 class MassFlash:
@@ -19,6 +20,12 @@ class MassFlash:
         if sys.platform == 'win32':
             prefix = r"\\.\\"
             return prefix+device_name[:-1]
+        elif device_name.startswith("/dev/disk"):
+            # rdisk works better on osx so we'll use that one
+            device_name = device_name.replace("/dev/disk", "/dev/rdisk")
+            # split remove partition descripter
+            device_name = re.sub('([s][0-9])','',device_name)
+            return device_name
         else:
             return device_name
 
@@ -62,7 +69,7 @@ class MassFlash:
     def startFlash(self,disk):
         processed_disk_name = self.preprocessDeviceName(disk)
         print("Processed File Name: "+processed_disk_name)
-        flashing_operation = Flash(processed_disk_name, self.disk_image_path)
+        flashing_operation = Flash(processed_disk_name, self.disk_image_path,disk)
         flashing_operation.start()
         self.flashing_operations.append(flashing_operation)
 
