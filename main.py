@@ -90,7 +90,7 @@ class MassFlash:
                 indexes_to_remove.append(index)
 
         for index_to_remove in indexes_to_remove:
-            del self.flashing_operations[index_to_remove]
+            del self.flashing_operations[index_to_remove:index_to_remove+1]
 
     def run(self):
         while True:  # {
