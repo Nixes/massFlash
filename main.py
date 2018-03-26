@@ -81,7 +81,7 @@ class MassFlash:
             return False
         else:
             # if answer did not match expected, ask again
-            return self.askStartFlashing
+            return self.askStartFlashing()
 
     def showStatus(self):
         indexes_to_remove = []
