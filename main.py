@@ -2,6 +2,7 @@ from threading import Thread
 import ctypes, sys
 import time
 import re
+import os
 from flash import Flash
 from driveManager import DriveManager
 
@@ -63,20 +64,24 @@ class MassFlash:
         # }
     # }
 
+def _winIsAdmin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
 # checks if currently logged in user is an admin
 def isAdmin():
-    try:
-        user_is_admin = ctypes.windll.shell32.IsUserAnAdmin()
-        print("user admin: "+str(user_is_admin))
-        return user_is_admin
-    except:
-        print("Failed to read admin status")
-        return False
+    if sys.platform == 'win32':
+        return _winIsAdmin
+    else:
+        return os.getuid() == 0
+
 
 def checkAdmin():
     if isAdmin() == False:
-        print('User not admin, requesting admin')
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
+        print('This program requires root privileges. Please run with sudo or in an admin terminal window.')
+        # ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
         exit()
 checkAdmin()
 
