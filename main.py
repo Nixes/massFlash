@@ -85,6 +85,10 @@ def checkAdmin():
         exit()
 checkAdmin()
 
+if len(sys.argv) < 2:
+    print("No image path specified.")
+    exit()
+
 image_path = sys.argv[1]
 print("Starting mass flash using image: "+image_path)
 
