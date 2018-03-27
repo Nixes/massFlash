@@ -83,14 +83,14 @@ def checkAdmin():
         print('This program requires root privileges. Please run with sudo or in an admin terminal window.')
         # ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, sys.argv[0], None, 1)
         exit()
-checkAdmin()
 
+
+checkAdmin()
 if len(sys.argv) < 2:
     print("No image path specified.")
     exit()
 
 image_path = sys.argv[1]
 print("Starting mass flash using image: "+image_path)
-
 massFlash = MassFlash(image_path)
 massFlash.run()

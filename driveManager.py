@@ -3,6 +3,10 @@ import wmi  # wmi is used to get list of physical drives on a windows system
 import sys  # sys is used for operating system specific behaviour
 from psutil import disk_partitions
 
+# used for windows api accesses (for unmounting/mounting)
+# from ctypes import *
+# from ctypes.wintypes import *
+
 class Drive:
     physical_disk = "";
     partitions = [];
@@ -30,10 +34,23 @@ class Drive:
         self.partitions.append(partition_path)
     # }
 
+    def _winUnmount(self,mountpoint):
+        call(["mountvol", mountpoint, "/p"])
+        #if not mountpoint.endswith('\\'):
+        #    mountpoint += '\\'
+        #if not windll.kernel32.DeleteVolumeMountPointW(mountpoint):
+        #    raise WinError()
+
+    def _osxUnmount(self,mountpoint):
+        call(["sudo", "umount", "-f", mountpoint])
+
     def unmount(self):
-        if sys.platform == 'osx':
-            for partition in self.partitions:
-                call(["sudo", "umount", "-f", partition])
+        print("Drive unmount requested")
+        for partition in self.partitions:
+            if sys.platform == 'osx':
+                self._osxUnmount(partition)
+            if sys.platform == 'win32':
+                self._winUnmount(partition)
 
     def debug(self):
         print("physical_disk: "+self.physical_disk+" partitions: "+str(self.partitions))
@@ -41,16 +58,25 @@ class Drive:
 class DriveManager:
     current_drives = None
 
+    #def _winGetPartitionsForPhysicalDisk(self,physical_disk):
+
+    # uses wmi to get partition mount points for each disk
+    def _winGetPartitionsForPhysicalDisk(self,physical_disk):
+        partitions = []
+        for part in physical_disk.associators('Win32_DiskDriveToDiskPartition'):
+            for ldisk in part.associators('Win32_LogicalDiskToPartition'):
+                partitions.append(ldisk.deviceId)
+
+        return partitions
+
     # windows specific version of get possible drives
     def _winGetPossibleDrives(self):
         converted_disks = []
         physical_disks = wmi.WMI().Win32_DiskDrive(MediaType="Removable Media")
         for physical_disk in physical_disks:
             converted_disk = Drive(physical_disk.Name)
-            # partitions = []
-            # for win_partition in physical_disk.associators ("Win32_DiskDriveToDiskPartition"):
-            #     print(win_partition)
-
+            partitions = self._winGetPartitionsForPhysicalDisk(physical_disk)
+            converted_disk.partitions = partitions
             converted_disks.append(converted_disk)
         return converted_disks
 
