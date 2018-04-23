@@ -1,2 +1,2 @@
 #!/bin/bash
-pipenv run python main.py
+sudo pipenv run python main.py
