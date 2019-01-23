@@ -10,26 +10,25 @@ class MassFlash:
     current_drives = []
     flashing_operations = []
 
-    def __init__(self, disk_image_path):  # {
+    def __init__(self, disk_image_path):
         self.disk_image_path = disk_image_path
-    # }
 
     # since for some reason psutil disk_partitions returns the incorrect device names
     # for windows drives we have to modify the windows device name into a physical device name
-    def preprocessDeviceName(self,device_name):
+    def preprocessDeviceName(self, device_name):
         if sys.platform == 'win32':
             prefix = r"\\.\\"
             return prefix+device_name[:-1]
         elif device_name.startswith("/dev/disk"):
             # rdisk works better on osx so we'll use that one
             device_name = device_name.replace("/dev/disk", "/dev/rdisk")
-            # split remove partition descripter
+            # split remove partition descriptor
             device_name = re.sub('([s][0-9])','',device_name)
             return device_name
         else:
             return device_name
 
-    def getPossibleDrives(self):  # {
+    def getPossibleDrives(self):
         filtered_drives = []
         for disk in disk_partitions():
             # filter out all /dev/sda* volumes
@@ -40,14 +39,11 @@ class MassFlash:
             filtered_drives.append(disk)
 
         return filtered_drives
-    # }
 
     def isNewDrive(self, latest_drive):
-        for current_drive in self.current_drives:  # {
-            if latest_drive.device == current_drive.device:  # {
+        for current_drive in self.current_drives:
+            if latest_drive.device == current_drive.device:
                 return False
-            # }
-        # }
         return True
 
     # get a list of new drives that might be those being flashed
@@ -55,18 +51,16 @@ class MassFlash:
         new_drives = []
         # check if this is the first time running
         latest_drives = self.getPossibleDrives()
-        if len(self.current_drives) > 0:  # {
-            for latest_drive in latest_drives:  # {
-                if self.isNewDrive(latest_drive):  # {
+        if len(self.current_drives) > 0:
+            for latest_drive in latest_drives:
+                if self.isNewDrive(latest_drive):
                     new_drives.append(latest_drive)
-                # }
-            # }
-        # }
+
         # update current_drives
         self.current_drives = latest_drives
         return new_drives
 
-    def startFlash(self,disk):
+    def startFlash(self, disk):
         processed_disk_name = self.preprocessDeviceName(disk)
         print("Processed File Name: "+processed_disk_name)
         flashing_operation = Flash(processed_disk_name, self.disk_image_path,disk)
@@ -96,7 +90,7 @@ class MassFlash:
             del self.flashing_operations[index_to_remove]
 
     def run(self):
-        while True:  # {
+        while True:
             newDrives = self.getNewDrives()
             for newDrive in newDrives:
                 print(newDrive)
@@ -109,7 +103,7 @@ class MassFlash:
             # get all flashing progress
             self.showStatus()
             time.sleep(0.05)
-        # }
+
 
 # checks if currently logged in user is an admin
 def isAdmin():
@@ -120,6 +114,7 @@ def isAdmin():
     except:
         print("Failed to read admin status")
         return False
+
 
 def checkAdmin():
     if isAdmin() == False:

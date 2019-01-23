@@ -13,7 +13,7 @@ class Flash:
     bytes_written = 0
     progress_bar = None
 
-    def getFileSize(self,path):
+    def getFileSize(self, path):
         filesize = 0
         with open(path, 'rb') as file:
             # seek to end of file
@@ -22,8 +22,7 @@ class Flash:
         file.close()
         return filesize
 
-
-    def __init__(self, disk, image, partition_path):  # {
+    def __init__(self, disk, image, partition_path):
         self.disk_path = disk
         self.image_path = image
         self.partition_path = partition_path
@@ -31,11 +30,9 @@ class Flash:
         # self.bytes_to_write = os.path.getsize(image)
         self.bytes_to_write = self.getFileSize(image)
         self.progress_bar = tqdm(total=self.bytes_to_write, desc="Disk: "+self.disk_path)
-    # }
-
 
     # wrapper around dd command, until I can figure out why a bit for bit copy is not sufficient
-    def _ddWriteFileToDisk(self, sourceimage_path,  destdisk_path):  # {
+    def _ddWriteFileToDisk(self, sourceimage_path,  destdisk_path):
         # unmount disks
         call(["sudo", "umount", "-f", self.partition_path])
 
@@ -46,10 +43,9 @@ class Flash:
         call(commands)
         self.bytes_written = self.bytes_to_write
         print("Thread finished!")
-    # }
 
     # disk_path = /dev/sda, image_path = ~/imagingtest.dd
-    def _writeDiskToFile(self, destImage, sourcedisk_path):  # {
+    def _writeDiskToFile(self, destImage, sourcedisk_path):
         with open(sourcedisk_path, 'rb') as disk:
             with open('test.img', 'wb') as image:
                 while True:
@@ -60,20 +56,19 @@ class Flash:
         # close file/device handles
         disk.close()
         image.close()
-    # }
 
-    def _testWriteFileToDisk(self, sourceimage_path,  destdisk_path):  # {
+    def _testWriteFileToDisk(self, sourceimage_path, destdisk_path):
         while self.bytes_written < self.bytes_to_write:
             self.bytes_written += 512
             time.sleep(0.0000001)
-    # }
 
     def unmountDrive(self,destdisk_path):
         if sys.platform == 'osx':
             call(["sudo", "umount", "-f", destdisk_path])
 
-    # may need rb+ for disk (+ does update mode), there are some indications that block devices can only be written to in this mode (especially in windows)
-    def _writeFileToDisk(self, sourceimage_path,  destdisk_path):  # {
+    # may need rb+ for disk (+ does update mode), there are some indications that block devices can only be written to
+    # in this mode (especially in windows)
+    def _writeFileToDisk(self, sourceimage_path, destdisk_path):
         # unmount drive
         call(["sudo", "umount", "-f", destdisk_path])
 
@@ -86,15 +81,13 @@ class Flash:
                         break
                     num_bytes_written = disk.write(bytes_read)
                     self.bytes_written += num_bytes_written
-                    if num_bytes_written == 0:  # {
+                    if num_bytes_written == 0:
                         print("No bytes written")
                         break
-                    # }
 
         # close file/device handles
         disk.close()
         image.close()
-    # }
 
     # simple wrapper that starts image flash in a thread
     def writeFileToDisk(self,sourceimage_path,  destdisk_path):
@@ -109,7 +102,7 @@ class Flash:
         return (self.bytes_written/self.bytes_to_write)*100
 
     # prints a string showing current status of this flashing operation, returns false if execution finished
-    def status(self):  # {
+    def status(self):
         # self.progress_bar.update(self.bytes_written)
         percentage_string = str(self.calculatePercentage())
         print('Drive: '+self.disk_path+' Percentage: '+percentage_string)
@@ -118,4 +111,3 @@ class Flash:
             return False
         else:
             return True
-    # }
