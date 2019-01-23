@@ -5,9 +5,9 @@ Currently only supports Mac OSX, will work on linux with minimal modification an
 
 - Open a terminal/console session from the directory you would like to install the program
 
-- Clone the repository using  ``git clone https://github.com/Nixes/massFlash.git``
+- Clone the repository by running the command  ``git clone https://github.com/Nixes/massFlash.git``
 
-- Go into the program folder using ``cd massFlash``
+- Go into the program folder by running the command ``cd massFlash``
 
-- Then run command ``./install.sh`` from this folder, then you can run the program using ``sudo pipenv run python main.py
+- Run command ``./install.sh`` from this folder, then you can run the program using ``sudo pipenv run python main.py
  /path/to/image.img``
