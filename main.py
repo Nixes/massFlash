@@ -9,6 +9,7 @@ class MassFlash:
     disk_image_path = ""
     current_drives = []
     flashing_operations = []
+    flashing_operations_completed = 0
 
     def __init__(self, disk_image_path):
         self.disk_image_path = disk_image_path
@@ -82,12 +83,17 @@ class MassFlash:
         for index, flashing_operation in enumerate(self.flashing_operations):
             if flashing_operation.status() == False:
                 indexes_to_remove.append(index)
+                self.flashing_operations_completed += 1
 
         print('\n')
         # sort index by index largest to smallest to allow all to be removed
         indexes_to_remove = sorted(indexes_to_remove, reverse=True)
         for index_to_remove in indexes_to_remove:
             del self.flashing_operations[index_to_remove]
+
+        # check count of indexes to remove, if count is > 0 then show number of flash operations status
+        if len(indexes_to_remove) > 0:
+            print('Total flashing operations completed: '+str(self.flashing_operations_completed))
 
     def run(self):
         while True:
